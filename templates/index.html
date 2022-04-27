@@ -5,135 +5,90 @@
     <meta charset="utf-8">
     <title>Measuring plants</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
 </head>
 
 <body>
     <div class="wrapper">
         <div class="textbox">
             <p>
-                This is space is available for some text to accompany these graphs. 
+                Temperature Celsius :: {{ temperature }}
                 <br>
-                This is just a quick mockup of using chart.js with flask.
+                Moisture% :: {{ moisture }}
+                <br>
+                Water detected :: {{water}}
+                <br>
+                Pump status :: {{pump}}
             </p>
         </div>
         <div class="moisturebox">
-            <canvas id="moisturechart"></canvas>
-        </div>
-        <div class="humiditybox">
-            <canvas id="humiditychart"></canvas>
-        </div>
-        <div class="temperaturebox">
-            <canvas id="temperaturechart"></canvas>
+            <canvas id="chart"></canvas>
         </div>
     </div>
     <script>
-        var ctxm = document.getElementById("moisturechart").getContext("2d")
-        var moisturechart = new Chart(ctxm, {
-            type: 'bar',
+        console.log('{{temperature[0]}}', '{{moisture}}', '{{legend[0]}}')
+        var dummytime = ['Wed, 27 Apr 2022 19:40 GMT', 'Wed, 27 Apr 2022 19:45 GMT', 'Wed, 27 Apr 2022 19:50 GMT', 'Wed, 27 Apr 2022 19:55 GMT', 'Wed, 27 Apr 2022 20:00 GMT']
+        var dataTemp = {
+                        label: '{{legend[1]}}',
+                        data: [25, 26, 27, 26, 28],
+                        lineTension: 0,
+                        fill: false,
+                        backgroundColor: [
+                            'red',
+                        ],
+                        borderColor: [
+                            'red',
+                        ],
+                        yAxisID: 'y'
+                    }
+        var dataMoisture = {
+                        label: '{{legend[0]}}',
+                        data: [75, 77, 76, 77, 76],
+                        lineTension: 0,
+                        fill: false,
+                        backgroundColor: [
+                            'blue',
+                        ],
+                        borderColor: [
+                            'blue',
+                        ],
+                        yAxisID: 'y1'
+                    }
+        var ctx = document.getElementById("chart").getContext("2d")
+        var chart = new Chart(ctx, {
+            type: 'line',
             data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
+                labels: dummytime,
+                datasets: [dataTemp, dataMoisture]
             },
             options: {
+                interaction: {
+                mode: 'index',
+                intersect: false,
+                },
+                stacked: false,
                 scales: {
                     y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-        var ctxh = document.getElementById("humiditychart").getContext("2d")
-        var humiditychart = new Chart(ctxh, {
-            type: 'bar',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-        var ctxt = document.getElementById("temperaturechart").getContext("2d")
-        var temperaturechart = new Chart(ctxt, {
-            type: 'bar',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                        beginAtZero: true,
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+
+                        // grid line settings
+                        grid: {
+                        drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                    },
                 }
             }
         });
     </script>
 </body>
-
 </html>

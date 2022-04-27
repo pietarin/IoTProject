@@ -1,9 +1,18 @@
 .wrapper {
     display: grid;
     grid-template-columns: minmax(100px, 1fr) minmax(100px, 1fr);
-    grid-template-rows: minmax(100px, 1fr) minmax(100px, 1fr);
 }
 .textbox {
     font-size: 150%;
     place-self: center;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+.chart {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 2;
 }
