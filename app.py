@@ -1,27 +1,23 @@
 from flask import Flask, render_template
+from fetchdata import *
+import json
 app = Flask(__name__)
 
 @app.route('/data')
 def data():
+    dict =  import_data()
     dummydata = {
-        "Temperature": [25, 26, 27, 26, 28],
-        "Moisture": [75, 77, 76, 77, 76],
-        "Pump": 1,
-        "Water": 1
+        "Temperature": dict["Temperature"],
+        "Humidity": dict["Humidity"],
+        "Pump": dict["Pump"],
+        "Water": dict["Water"],
+        "Time" : dict["Time"]
     }
-    return dummydata
+    return json.dumps(dict)
 
 @app.route('/')
 def home():
-    dummydata = data()
-    keys = list(dummydata.keys())
-    legend = ['Moisture', 'Temperature']
-    labels = [keys[0], keys[1]]
-    temperature = dummydata.get("Temperature")
-    moisture = dummydata.get("Moisture")
-    pump = dummydata.get("Pump")
-    water = dummydata.get("Water")
-    return render_template('index.html', temperature=temperature, moisture=moisture, pump=pump, water=water, labels=labels, legend=legend)
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

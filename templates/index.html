@@ -5,8 +5,10 @@
     <meta charset="utf-8">
     <title>Measuring plants</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+        integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 </head>
 
 <body>
@@ -27,68 +29,112 @@
         </div>
     </div>
     <script>
-        console.log('{{temperature[0]}}', '{{moisture}}', '{{legend[0]}}')
-        var dummytime = ['Wed, 27 Apr 2022 19:40 GMT', 'Wed, 27 Apr 2022 19:45 GMT', 'Wed, 27 Apr 2022 19:50 GMT', 'Wed, 27 Apr 2022 19:55 GMT', 'Wed, 27 Apr 2022 20:00 GMT']
-        var dataTemp = {
-                        label: '{{legend[1]}}',
-                        data: [25, 26, 27, 26, 28],
-                        lineTension: 0,
-                        fill: false,
-                        backgroundColor: [
-                            'red',
-                        ],
-                        borderColor: [
-                            'red',
-                        ],
-                        yAxisID: 'y'
-                    }
-        var dataMoisture = {
-                        label: '{{legend[0]}}',
-                        data: [75, 77, 76, 77, 76],
-                        lineTension: 0,
-                        fill: false,
-                        backgroundColor: [
-                            'blue',
-                        ],
-                        borderColor: [
-                            'blue',
-                        ],
-                        yAxisID: 'y1'
-                    }
-        var ctx = document.getElementById("chart").getContext("2d")
-        var chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: dummytime,
-                datasets: [dataTemp, dataMoisture]
-            },
-            options: {
-                interaction: {
-                mode: 'index',
-                intersect: false,
-                },
-                stacked: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                    },
-                    y1: {
-                        beginAtZero: true,
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
 
-                        // grid line settings
-                        grid: {
-                        drawOnChartArea: false, // only want the grid lines for one axis to show up
-                        },
-                    },
+        var dataTemp = [2, 3, 4, 5, 6, 2];
+        var dataTemperature = [2, 3, 4, 5, 6, 2];
+        var dataHumidity = [2, 3, 4, 5, 6, 2];
+        var dataWater = [2, 3, 4, 5, 6, 2];
+        var dataPump = [2, 3, 4, 5, 6, 2];
+        var dummytime = [1, 2, 3, 4, 5, 6];
+        var data;
+        var chart = new Chart("chart", {});
+
+        function drawChart2() {
+            console.log("drawing chart")
+            chart.destroy();
+            chart = new Chart("chart", {
+                type: "line",
+                data: {
+                    labels: dummytime,
+                    datasets: [{
+                        data: dataTemperature,
+                        borderColor: "red",
+                        fill: false,
+                        label: "Temperature"
+                    }, {
+                        data: dataHumidity,
+                        borderColor: "green",
+                        fill: false,
+                        label: "Humidity"
+                    }, {
+                        data: dataPump,
+                        borderColor: "blue",
+                        fill: false,
+                        label: "Pump"
+                    }, {
+                        data: dataWater,
+                        borderColor: "orange",
+                        fill: false,
+                        label: "Water Sensor"
+                    }]
+                },
+                options: {
+                    legend: { display: true },
+                    title: {
+                        display: true,
+                        text: "Historical Data"
+                    }
                 }
+            });
+        }
+
+        function updateChart(chart) {
+            chart.data.labels.push(dummytime)
+            chart.data.datasets[0].data.push(dataTemperature)
+            chart.data.datasets[1].data.push(dataHumidity)
+            chart.data.datasets[2].data.push(dataPump)
+            chart.data.datasets[3].data.push(dataWater)
+            chart.update();
+        }
+
+        function getData() {
+            var xmlhttp = new XMLHttpRequest();
+            console.log("loading ...");
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText)
+                    data = JSON.parse(this.responseText);
+                    console.log(data)
+
+                } else {
+                    console.log(this.status);
+                    console.log(this.readyState);
+                }
+            };
+            xmlhttp.open("GET", "/data", true);
+            xmlhttp.send();
+
+            dataTemperature = data.Temperature
+            var index = dataTemperature.length;
+            document.getElementById('temp').innerHTML = dataTemperature[index - 1];
+            dataHumidity = data.Humidity
+            document.getElementById('humid').innerHTML = dataHumidity[index - 1];
+            dataPump = data.Pump
+            if (dataPump[index - 1] == 0) {
+                document.getElementById('pp').innerHTML = "PUMP OFF";
+                document.getElementById('pp').style.backgroundColor = 'gray';
+                document.getElementById('pp').style.color = 'black';
+            } else {
+                document.getElementById('pp').innerHTML = "PUMP ON";
+                document.getElementById('pp').style.backgroundColor = 'green';
+                document.getElementById('pp').style.color = 'white';
             }
-        });
+
+            dataWater = data.Water
+            if (dataWater[index - 1] == 0) {
+                document.getElementById('wt').innerHTML = "WATER DETECTED";
+                document.getElementById('wt').style.backgroundColor = 'blue';
+                document.getElementById('wt').style.color = 'white';
+            } else {
+                document.getElementById('wt').innerHTML = "NO WATER DETECTED";
+                document.getElementById('wt').style.backgroundColor = 'red';
+                document.getElementById('wt').style.color = 'white';
+            }
+            dummytime = data.Time
+            drawChart2();
+        }
+        setInterval(getData, 2000)
     </script>
 </body>
+
 </html>
